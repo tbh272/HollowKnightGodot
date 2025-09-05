@@ -23,6 +23,12 @@ enum State {
 @export var wall_jump_velocity: Vector2 = Vector2(500.0, -500.0)
 @export var gravity: float = 2000.0
 
+@export var wall_coyote_time: float = 0.15   # grace after leaving wall
+@export var jump_buffer_time: float = 0.15   # grace after pressing jump early
+
+var wall_coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+
 # Internal variables
 var current_state: State = State.IDLE
 var is_dashing: bool = false
@@ -36,6 +42,18 @@ func _ready() -> void:
 	animated_sprite.play("Idle")  # Start with idle
 
 func _physics_process(delta: float) -> void:
+	# Update wall coyote timer
+	if is_on_wall() and not is_on_floor():
+		wall_coyote_timer = wall_coyote_time
+	else:
+		wall_coyote_timer = max(wall_coyote_timer - delta, 0.0)
+
+	# Update jump buffer
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer = jump_buffer_time
+	else:
+		jump_buffer_timer = max(jump_buffer_timer - delta, 0.0)
+
 	# Apply gravity when not on floor or wall sliding
 	if not is_on_floor() and not is_wall_sliding:
 		velocity.y += gravity * delta
@@ -63,7 +81,7 @@ func _physics_process(delta: float) -> void:
 	_flip_sprite()
 
 func _handle_movement() -> void:
-	var input_direction: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var input_direction: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity.x = input_direction.x * move_speed
 	if input_direction.x != 0:
 		facing_direction = sign(input_direction.x)
@@ -87,16 +105,29 @@ func _handle_dash(delta: float) -> void:
 
 func _handle_wall_slide() -> void:
 	is_wall_sliding = false
-	if is_on_wall() and velocity.y > 0 and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
+	if is_on_wall() and not is_on_floor() and velocity.y > 0:
 		is_wall_sliding = true
 		velocity.y = min(velocity.y, wall_slide_speed)
 
 func _handle_wall_jump() -> void:
-	if Input.is_action_just_pressed("jump") and is_on_wall() and not is_on_floor():
-		velocity = wall_jump_velocity
+	if jump_buffer_timer > 0.0 and wall_coyote_timer > 0.0:
 		var wall_normal = get_wall_normal()
-		velocity.x *= -sign(wall_normal.x)
+
+		# Safety check if wall_normal = ZERO (just left wall)
+		if wall_normal == Vector2.ZERO:
+			wall_normal.x = -facing_direction
+
+		# Always push away from wall
+		velocity.x = wall_jump_velocity.x * wall_normal.x
+		velocity.y = wall_jump_velocity.y
+
+		# Flip facing
 		facing_direction = sign(velocity.x)
+
+		# Clear timers so we don’t double-trigger
+		jump_buffer_timer = 0.0
+		wall_coyote_timer = 0.0
+		is_wall_sliding = false
 
 # Update the current state based on conditions
 func _update_state() -> void:
