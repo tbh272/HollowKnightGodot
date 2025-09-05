@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://cgcmteffsy6f8"]
+
+[ext_resource type="Script" uid="uid://dn5un6bcmfxvr" path="res://Player/player.gd" id="1_4ntmi"]
+[ext_resource type="Texture2D" uid="uid://bh8ldk653k883" path="res://icon.svg" id="1_l8h54"]
+[ext_resource type="Script" uid="uid://bvi6uwm7w55oj" path="res://Player/follow_camera.gd" id="3_btcbx"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ntmi"]
+radius = 45.0
+height = 122.0
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_4ntmi")
+
+[node name="CameraTarget" type="Node2D" parent="."]
+position = Vector2(0, -19)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_l8h54")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_4ntmi")
+
+[node name="CameraRig" type="Node2D" parent="."]
+
+[node name="FollowCamera" type="Camera2D" parent="CameraRig"]
+offset = Vector2(0, -50)
+zoom = Vector2(2, 2)
+process_callback = 0
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
+script = ExtResource("3_btcbx")
+base_zoom = null
+zoom_speed = null
+offset_base = null
+transition_speed = null
