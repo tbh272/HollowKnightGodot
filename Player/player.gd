@@ -14,20 +14,25 @@ enum State {
 # Reference to AnimatedSprite2D
 @onready var animated_sprite: AnimatedSprite2D = $Sprite
 
-# Exportable variables for tweaking
+@export_category("Movement")
 @export var move_speed: float = 400.0
-@export var jump_velocity: float = -800.0
+@export var jump_velocity: float = -700.0
 @export var dash_speed: float = 800.0
 @export var dash_duration: float = 0.6
 @export var wall_slide_speed: float = 100.0
 @export var wall_jump_velocity: Vector2 = Vector2(500.0, -500.0)
 @export var gravity: float = 2000.0
 
+
+@export_category("Jump And Walls")
 @export var wall_coyote_time: float = 0.15   # grace after leaving wall
 @export var jump_buffer_time: float = 0.15   # grace after pressing jump early
+@export var short_hop_multiplier: float = 0.5  # how much weaker the jump is if released early
+@export var coyote_time: float = 0.1  # seconds after leaving ground
 
 var wall_coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
+var coyote_timer: float = 0.0
 
 # Internal variables
 var current_state: State = State.IDLE
@@ -42,17 +47,22 @@ func _ready() -> void:
 	animated_sprite.play("Idle")  # Start with idle
 
 func _physics_process(delta: float) -> void:
-	# Update wall coyote timer
+	## Update wall coyote timer
 	if is_on_wall() and not is_on_floor():
 		wall_coyote_timer = wall_coyote_time
 	else:
 		wall_coyote_timer = max(wall_coyote_timer - delta, 0.0)
+	
+	## Jump Timer
+	if is_on_floor():
+		coyote_timer = coyote_time
+	else:
+		coyote_timer = max(coyote_timer - delta, 0)
 
-	# Update jump buffer
 	if Input.is_action_just_pressed("jump"):
 		jump_buffer_timer = jump_buffer_time
 	else:
-		jump_buffer_timer = max(jump_buffer_timer - delta, 0.0)
+		jump_buffer_timer = max(jump_buffer_timer - delta, 0)
 
 	# Apply gravity when not on floor or wall sliding
 	if not is_on_floor() and not is_wall_sliding:
@@ -87,8 +97,15 @@ func _handle_movement() -> void:
 		facing_direction = sign(input_direction.x)
 
 func _handle_jump() -> void:
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	# Jump trigger (buffer + coyote)
+	if jump_buffer_timer > 0 and coyote_timer > 0:
 		velocity.y = jump_velocity
+		jump_buffer_timer = 0
+		coyote_timer = 0
+
+	# Variable jump (short hop if released early)
+	if Input.is_action_just_released("jump") and velocity.y < 0:
+		velocity.y *= short_hop_multiplier
 
 func _handle_dash_input() -> void:
 	if Input.is_action_just_pressed("dash") and not is_dashing:
