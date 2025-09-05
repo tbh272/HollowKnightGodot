@@ -1,13 +1,13 @@
 # 🌌 Hollow Knight Player Movement Recreation in Godot 🗡️
 
 ## ⚠️ Disclaimer
-To Team Cherry, the creators of *Hollow Knight* and *Silksong*: I sincerely apologize for using any extracted sprites or assets from *Hollow Knight* in this project. 🙏 This is purely a coding exercise to replicate the game's movement mechanics as a learning experience. I am not an artist and have no intention of claiming or redistributing your incredible work. This project is for educational purposes only, and I deeply respect your artistry and contributions to the gaming world. 💖
+To Team Cherry, the creators of *Hollow Knight* and *Silksong*: I sincerely apologize for using any extracted sprites or assets from *Hollow Knight* in this project. 🙏 This is purely a coding exercise to replicate the game's movement mechanics as a learning experience. I am not an artist and have no intention of claiming or redistributing your incredible work. This project is for educational purposes only, and I deeply respect your work. 💖
 
 ## 🌟 Overview
 This project is a recreation of the player movement mechanics from *Hollow Knight*, a critically acclaimed 2D Metroidvania game, built using the **Godot Engine (4.x)**. 🎮 The goal is to emulate the smooth, precise, and responsive movement of the Knight (and inspired by Hornet from *Silksong*), including features like 8-way movement, jumping, dashing, wall sliding, and wall jumping. This is a coding-focused project to study 2D platformer mechanics, with a focus on achieving the tight, fluid feel of *Hollow Knight*. 🐞
 
 ## ✨ Features
-- **8-Way Movement** 🏃: Smooth horizontal movement with input-based direction.
+- **8-Way Movement** 🏃: Smooth horizontal movement with input-based direction. (As of the first upload it just goes left/right w/Jump & slide mechanics)
 - **Jumping** 🦗: Precise, snappy jumps with a *Hollow Knight*-like arc (tuned with gravity ~2000 pixels/s² and jump velocity ~-600).
 - **Dashing** 💨: A quick burst of speed in the facing direction, with a lock on vertical movement.
 - **Wall Sliding** 🧗: Slow descent when holding toward a wall while falling.
@@ -29,8 +29,3 @@ This project is a recreation of the player movement mechanics from *Hollow Knigh
   - Uses a state machine (`enum`) to switch between animations (e.g., `idle`, `run`, `jump_rise`, `dash`).
   - Animations are driven by a sprite sheet (12 FPS for a 12-frame animation lasts 1.0 second, as calculated).
   - Sprite flipping via `flip_h` for directional facing.
-
-## 🚀 How to Run
-1. **Clone the Repository** 📥:
-   ```bash
-   git clone https://github.com/your-username/hollow-knight-movement-godot.git
