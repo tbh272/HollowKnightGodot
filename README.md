@@ -1,4 +1,4 @@
-# 🌌 Hollow Knight Player Movement Recreation in Godot 🗡️
+# 🌌 Hollow Knight Movement recreated in Godot 🗡️
 
 ## ⚠️ Disclaimer
 To Team Cherry, the creators of *Hollow Knight* and *Silksong*: I sincerely apologize for using any extracted sprites or assets from *Hollow Knight* in this project. 🙏 This is purely a coding exercise to replicate the game's movement mechanics as a learning experience. I am not an artist and have no intention of claiming or redistributing your incredible work. This project is for educational purposes only, and I deeply respect your work. 💖
